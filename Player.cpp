@@ -99,8 +99,10 @@ void Player::Update(float dt)
 	}
 	look = sf::Vector2f(mousePos - position);
 	SetRotation(Utils::Angle(look));
+	sf::Vector2f prevPos = position;
 	SetPosition(position + dt * speed * direction);
-
+	SetPosition({ Utils::Clamp(position.x, movableBounds.left, movableBounds.left + movableBounds.width),
+				Utils::Clamp(position.y, movableBounds.top, movableBounds.top + movableBounds.height) });
 	shootTimer += dt;
 	reloadTimer += dt;
 
@@ -112,7 +114,7 @@ void Player::Update(float dt)
 
 	if (reloadTimer >= reloadDlay)
 	{
-		if (ammo != 0 && shootTimer > shootDelay && InputMgr::GetKeyDown(sf::Keyboard::F))
+		if (ammo != 0 && shootTimer > shootDelay && InputMgr::GetKeyDown(sf::Keyboard::Space))
 		{
 			Shoot();
 		}
@@ -163,4 +165,9 @@ void Player::OnDie()
 {
 	dynamic_cast<SceneGame*>(sceneGame)->SetStatus(Status::GameOver);
 	Reset();
+}
+
+void Player::SetMovableBounds(const sf::FloatRect& rect)
+{
+	movableBounds = rect;
 }

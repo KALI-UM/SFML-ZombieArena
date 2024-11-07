@@ -62,7 +62,7 @@ void Zombie::Reset()
 	SetPosition({ 0, 0 });
 	SetRotation(0);
 	SetScale({ 1,1 });
-	attackTimer = 0;
+	attackTimer = attackInterval;
 }
 
 void Zombie::Update(float dt)

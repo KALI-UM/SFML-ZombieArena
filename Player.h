@@ -30,6 +30,7 @@ protected:
 	Scene* sceneGame;
 
 	sf::FloatRect hitBox;
+	sf::FloatRect movableBounds;
 	DebugBox debug;
 public:
 	Player(const std::string& name = "");
@@ -56,6 +57,8 @@ public:
 	void OnGetAmmo();
 	void OnDamaged(int damage);
 	void OnDie();
+
+	void SetMovableBounds(const sf::FloatRect& rect);
 
 	int GetHp()const { return hp; }
 	int GetMaxHp()const { return maxHp; }

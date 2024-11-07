@@ -36,13 +36,15 @@ protected:
 	std::list<Effect*>	bloods;
 	ObjectPool<Effect>	bloodPool;
 
+	sf::Sprite cursor;
+
 	UiHud* uiHud;
 	UiUpgrade* uiUpgrade;
 	int score = 0;
 	int highScore = 0;
 	Status currStatus = Status::Awake;
 	int currWave = 1;
-	float defaultSpawnTime = 3;
+	float defaultSpawnTime = 10.f;
 	float zombieSpawnTime = defaultSpawnTime;
 	float zombieSpawnTimer = 0;
 public:
@@ -54,6 +56,7 @@ public:
 	void Enter()override;
 	void Exit()override;
 	void Update(float dt)override;
+	void Draw(sf::RenderWindow& window) override;
 
 	void SetStatus(Status status);
 	void UpdateAwake(float dt);

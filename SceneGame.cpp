@@ -34,12 +34,17 @@ void SceneGame::Release()
 
 void SceneGame::Enter()
 {
+	FRAMEWORK.GetWindow().setMouseCursorVisible(false);
+	cursor.setTexture(TEXTURE_MGR.Get("graphics/crosshair.png"));
+
+	Utils::SetOrigin(cursor, Origins::MC);
 	SetStatus(Status::Awake);
 	sf::Vector2f size = FRAMEWORK.GetWindowSizeF();
 	worldView.setSize(size);
 	background->SetOrigin(Origins::MC);
 	UiView.setSize(size);
 	UiView.setCenter(size.x * 0.5f, size.y * 0.5f);
+
 	Scene::Enter();
 }
 
@@ -53,6 +58,7 @@ void SceneGame::Exit()
 void SceneGame::Update(float dt)
 {
 	Scene::Update(dt);
+	cursor.setPosition(ScreenToUi(InputMgr::GetMousePosition()));
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Escape))
 	{
@@ -84,6 +90,12 @@ void SceneGame::Update(float dt)
 	}
 }
 
+void SceneGame::Draw(sf::RenderWindow& window)
+{
+	Scene::Draw(window);
+	window.draw(cursor);
+}
+
 void SceneGame::SetStatus(Status status)
 {
 	Status prevStatus = currStatus;
@@ -92,18 +104,19 @@ void SceneGame::SetStatus(Status status)
 	switch (currStatus)
 	{
 	case Status::Awake:
+		FRAMEWORK.SetTimeScale(0);
 		uiHud->SetCenterMsg(true);
 		uiUpgrade->SetActive(false);
 		itemGenerator->SetActive(false);
 		break;
 	case Status::Game:
+		player->SetMovableBounds(background->GetGlobalBounds());
 		FRAMEWORK.SetTimeScale(1);
-		
 		uiHud->SetCenterMsg(false);
 		uiHud->SetWave(currWave);
 		itemGenerator->SetActive(true);
 		zombieSpawnTimer = 0;
-		if (prevStatus == Status::GameOver)
+		if (prevStatus == Status::GameOver|| prevStatus == Status::Awake)
 		{
 			score = 0;
 			player->Reset();
@@ -156,21 +169,21 @@ void SceneGame::UpdateGame(float dt)
 	uiHud->SetAmmo(player->GetAmmo(), player->GetMaxAmmo());
 	uiHud->SetHp(player->GetHp(), player->GetMaxHp());
 
-	if (InputMgr::GetKeyDown(sf::Keyboard::Space))
-	{
-		SpawnZombies(3);
-	}
+	//if (InputMgr::GetKeyDown(sf::Keyboard::Space))
+	//{
+	//	SpawnZombies(3);
+	//}
 
 	zombieSpawnTimer += dt;
 	if (zombieSpawnTimer > zombieSpawnTime)
 	{
-		SpawnZombies(3);
+		SpawnZombies(10);
 		zombieSpawnTimer = 0;
 	}
 
 	if (score > currWave * currWave * 100)
 	{
-		zombieSpawnTime *= 0.5f;
+		zombieSpawnTime *= 0.8f;
 		SetStatus(Status::Upgrade);
 	}
 }
